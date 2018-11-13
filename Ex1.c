@@ -10,30 +10,40 @@ Ao lado exemplifica-se o funcionamento do jogo num cenário em que o computador 
  a jogar, para servir de referência na sua implementação.*/
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 int do_random();
 int do_random_for_game();
 bool who_plays_first();
 void play(bool c);
+void is_winner(int a, bool b );
 
 int main()
 {
 	play(who_plays_first());
 	return 0;
 }
-int do_random()
+int do_random() //Funcao random universal para ser usado para qualquer situacao
+
+//https://www.tutorialspoint.com/c_standard_library/c_function_srand.htm
+
 {
 	int random;
-	srand(time(0));
-	for(int i = 0; i<5; i++) 
-        random = rand();
+	time_t t;
+
+	srand((unsigned) time(&t));
+
+	for(int i = 0; i < 5; i++) 
+        random = (int)(rand() % 2225);
 
     return random;
 }
-int do_random_for_game()
+int do_random_for_game() // função para retirar valores random com valores 1,2 e 3
 {
-	int a = do_random;
-	if (a > 500 && a < 1500)
+	int a = 0;
+	a = do_random();
+	if (a > 750 && a < 1500)
 	{
 		return a = 2;
 	}
@@ -46,59 +56,87 @@ int do_random_for_game()
 		return a = 1;
 	}
 }
-bool who_plays_first()
+bool who_plays_first() //Funcao para saber quem joga primeiro
 {
 	
-  	if(do_random >1556)
+  	if(do_random() > 1450)
   	{
   		printf("Primeiro eu\n");
   		return false;
   	}
   	else
   	{
-  		printf("Tu és o primeiro a jogar");
+  		printf("Tu és o primeiro a jogar: ");
   		return true; 
   	}
 }
-void play(bool c)
+void play(bool c)  //Funcao que contem o algoritmo do jogo
 {
-	bool winner=false; // Para guardar o vencedor definir se 1 é PC e 0 Humano
 	int a,x = 0; // Para
 	int sum = 0;
-	char b = 0;
-
+	
 		do
 		{
-			if(c == true)
+			if(c == false) //PC
 			{
-				x = do_random_for_game();
+				x = do_random_for_game(); //Buscar um valor entre 1 e 3
 				sum += x;
-				c = false;
+				c = true;
 				printf("Eu jogo %d , vai em %d\n", x ,sum );
+				if (sum >=31) // Verificar se é necessário
+				{
+					break;
+				}
 			}
-			if (c == false)
+			if (c == true) //Humano
 			{
-				scanf(&a);
-				sum += x;
-				c == true;
-				printf("A tua jogada: %d\n", x);
+				scanf("%d",&a); // Falta validar valores entre  1 e 3 inseridos pelo utilizador
+				sum += a;
+				c = false;
+				printf("A tua jogada: %d\n", a);
 			}
+
 		}while(sum <31);
-		if (sum <= 31 && c == true)
-		{
-			printf("Desta vez ganhei eu. Boa sorte para a próxima\n");
-		}
-		if (sum <= 31 && c == false)
-		{
-			printf("Parabéns ganhaste!!!\n");
-		}
-		scanf("Novo jogo (s/n)", %b);
-		if (b == 's')
-		{
-			play(c);
-		}else{
-			printf("Adeus e ate a proxima!\n");
-			return 0;
-		}
+
+		printf("Sum = %d", sum);
+		is_winner(sum,c); 
+
+		
+}
+void is_winner(int a, bool b) // Para verificar quem ganhou e pergunta se quer jogar novamente
+{
+	char k;
+
+	if ( a-31 == 0 && b == true )
+	{
+		printf("(1if) Desta vez ganhei eu. Boa sorte para a próxima\n");
+		printf("Novo jogo (s/n): ");
+		scanf(" %c", &k);
+	}
+	if ( a-31 != 0 && b == true )
+	{
+		printf("(2if) Parabéns ganhaste!!!\n");
+		printf("Novo jogo (s/n): ");
+		scanf(" %c", &k);
+	}
+	if ( a-31 == 0 && b == false )
+	{
+		printf("(3if) Parabéns ganhaste!!!\n");
+		printf("Novo jogo (s/n): ");
+		scanf( " %c", &k);
+	}
+	if ( a-31 != 0 && b == false )
+	{
+		printf("(4if) Desta vez ganhei eu. Boa sorte para a próxima\n");
+		printf("Novo jogo (s/n): ");
+		scanf(" %c", &k);
+	}
+	if (k == 's')
+	{
+		play(b);
+	}else
+	{
+		printf("Adeus e ate a proxima!\n");
+	}
 }
 
