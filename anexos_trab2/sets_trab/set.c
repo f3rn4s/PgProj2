@@ -17,7 +17,20 @@
  *   retorna o total de elementos do conjunto
  */
 int  set_cardinality( const Set s ){
- return s[0];
+
+	int count_elements = 0;
+
+	for (int i = 1; i < MAX_SET+1; ++i)
+	{
+		if(s[i] == 0)
+		{
+			break;
+		}
+		count_elements++;
+	}
+	s[0] = count_elements;
+
+ 	return s[0];
 }
 
 
@@ -32,11 +45,17 @@ int  set_cardinality( const Set s ){
  *   	retorna true se o inteiro "elem" existe no conjunto "s", e false caso contrário
  */
 bool set_is_member( const Set s,  int elem ){
-  // A implementar
+  
+  for (int i = 1; i < MAX_SET+1; ++i)
+  {
+  	if (s[i] == elem)
+  	{
+  		return true;
+  	}
+  }
+
   return false;
 }
-
-
 
 /**
  * Descrição:
@@ -50,7 +69,7 @@ bool set_is_member( const Set s,  int elem ){
  *   Caso contrário, retorna false.
  */
 bool set_equals(const Set s1, const Set s2 ){
-   // A implementar
+   // Fazer sort nos 2 sets e depois comparar
    return false;
 } 
 

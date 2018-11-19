@@ -248,8 +248,12 @@ void test_set_not_contains_other_set() {
 }
 
 int main() {
+	Set arr1 = { 1, 2, 5, 7, 21 };
+
+	set_cardinality(arr1);
+
 	BEGIN_TESTS();
-	
+
 	// is member tests
 	RUN_TEST(test_not_a_member_of_an_empty_set);
 	RUN_TEST(test_is_a_member_of_set);

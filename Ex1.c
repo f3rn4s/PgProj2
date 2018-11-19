@@ -90,7 +90,20 @@ void play(bool c)  //Funcao que contem o algoritmo do jogo
 			}
 			if (c == true) //Humano
 			{
-				scanf("%d",&a); // Falta validar valores entre  1 e 3 inseridos pelo utilizador
+				scanf(" %d",&a); // Falta validar valores entre  1 e 3 inseridos pelo utilizador
+
+				/*while(true)
+					scanf("%d",&a);
+					if (a > 0 || a < 4)
+					{
+						break;
+					}
+					else
+					{
+						printf("Insira um numero entre 1 e e 3 por favor!!!");		Está a prender o ciclo
+						continue;
+					}*/
+
 				sum += a;
 				c = false;
 				printf("A tua jogada: %d\n", a);
@@ -109,25 +122,25 @@ void is_winner(int a, bool b) // Para verificar quem ganhou e pergunta se quer j
 
 	if ( a-31 == 0 && b == true )
 	{
-		printf("(1if) Desta vez ganhei eu. Boa sorte para a próxima\n");
+		printf("Desta vez ganhei eu. Boa sorte para a próxima\n");
 		printf("Novo jogo (s/n): ");
 		scanf(" %c", &k);
 	}
 	if ( a-31 != 0 && b == true )
 	{
-		printf("(2if) Parabéns ganhaste!!!\n");
+		printf("Parabéns ganhaste!!!\n");
 		printf("Novo jogo (s/n): ");
 		scanf(" %c", &k);
 	}
 	if ( a-31 == 0 && b == false )
 	{
-		printf("(3if) Parabéns ganhaste!!!\n");
+		printf("Parabéns ganhaste!!!\n");
 		printf("Novo jogo (s/n): ");
 		scanf( " %c", &k);
 	}
 	if ( a-31 != 0 && b == false )
 	{
-		printf("(4if) Desta vez ganhei eu. Boa sorte para a próxima\n");
+		printf("Desta vez ganhei eu. Boa sorte para a próxima\n");
 		printf("Novo jogo (s/n): ");
 		scanf(" %c", &k);
 	}

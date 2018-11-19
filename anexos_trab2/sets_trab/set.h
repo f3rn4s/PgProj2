@@ -26,8 +26,6 @@ typedef int Set[MAX_SET+1]; 	/// Set tipo array onde se armazenam os elementos d
  */
 int  set_cardinality(const Set s );
 
-
-
 /**
  * Descrição:
  *   	Saber se o elemento consta no conjunto.
