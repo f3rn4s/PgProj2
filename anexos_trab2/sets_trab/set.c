@@ -16,21 +16,8 @@
  * Retorno:
  *   retorna o total de elementos do conjunto
  */
-int  set_cardinality( const Set s ){
-
-	int count_elements = 0;
-
-	for (int i = 1; i < MAX_SET+1; ++i)
-	{
-		if(s[i] == 0)
-		{
-			break;
-		}
-		count_elements++;
-	}
-	s[0] = count_elements;
-
- 	return s[0];
+int  set_cardinality(const Set s ){
+	return s[0];
 }
 
 
@@ -45,8 +32,10 @@ int  set_cardinality( const Set s ){
  *   	retorna true se o inteiro "elem" existe no conjunto "s", e false caso contrário
  */
 bool set_is_member( const Set s,  int elem ){
+
+int dim = set_cardinality(s);
   
-  for (int i = 1; i < MAX_SET+1; ++i)
+  for (int i = 1; i < dim; i++)
   {
   	if (s[i] == elem)
   	{
@@ -69,8 +58,24 @@ bool set_is_member( const Set s,  int elem ){
  *   Caso contrário, retorna false.
  */
 bool set_equals(const Set s1, const Set s2 ){
-   // Fazer sort nos 2 sets e depois comparar
-   return false;
+
+   int dim1 = set_cardinality(s1);
+   int dim2 = set_cardinality(s2);
+   bool equal = false;
+   int i = 0;
+
+   if (dim1 != dim2)
+   {
+   	equal = false;
+   }
+   else
+   {
+   	for (i = 1; i <= dim2 ; i++)
+   	{
+   		equal = set_is_member (s1, s2[i]);
+   	}
+   }
+   return equal;
 } 
 
 
@@ -87,8 +92,21 @@ bool set_equals(const Set s1, const Set s2 ){
  *    tem capacidade para conter todos os elementos do conjunto união.
  */
 bool set_union( const Set s1, const Set s2, Set sr ){
-	// A implementar
-	return false;
+
+	if((s1[0] + s2[0]) > 256) // perguntar colocar Max_SET????????????
+		return false;//se exceder sair
+	sr[0] = s1[0] + s2[0];//definir tamanho de sr
+	
+	int i, j, start2idx = s1[0] + 1;
+	
+	
+	for( i = 1; i <= s1[0]; i++)// para copy do s1 em sr
+		sr[i] = s1[i];
+	
+	for(i = 1, j = start2idx; i<=s2[0]; i++, j++)// apos fim de s1...
+		sr[j] = s2[i];//... colocar s2
+		
+	return true;// se chegou aqui terá feito tudo corretamente
 }
 
 /**
@@ -103,8 +121,19 @@ bool set_union( const Set s1, const Set s2, Set sr ){
  *   Não retorna valor. É sempre possível realizar a intersecção
  */
  void set_intersection( const Set s1, const Set s2, Set sr ){
-	// A implementar
-}
+
+	int i, j, count = 0;
+		
+	for(i = 1; i <= s1[0]; i++)// a cada s1
+		for(j = 1; j <= s2[0]; j++)// compara com todos de s2
+			if(s1[i] == s2[j])
+			{
+				count++;//contador e posicionador para sr
+				sr[count] = s1[i];
+			}
+	sr[0] = count;	
+	return;//esta fc parte do principio de k não há elementos repetidos
+}//perguntar se há elementos repetidos????
 
 /**
  * Descrição:
@@ -118,7 +147,14 @@ bool set_union( const Set s1, const Set s2, Set sr ){
  *   Não retorna valor. É sempre possível realizar a diferença
  */
 void set_difference(const Set s1, const Set s2, Set sr ){
-	// A implementar
+	//if(s1[0]>s2[0]) perguntar qt à diferença com s1/2 vazio
+	sr[0] = (s1[0]<s2[0]) ? s1[0] : s2[0];//tamanho sr condicionado 
+	int i; 
+	
+	for( i = 1; i < s1[0] || i<s2[0]; i++)// para copy do s1 em sr
+		sr[i] = s1[i]-s2[i];
+			
+	return;
 }
 
 /**
@@ -132,10 +168,28 @@ void set_difference(const Set s1, const Set s2, Set sr ){
  *   retorna valor de true se "s1" contém "s2", e false caso contrário.
  */
 bool set_contains(const Set s1, const Set s2 ){
-	// A implementar
-	return false;
-}
 
+	int dim2 = set_cardinality(s2);//dimensao do 2 conjunto
+	bool devolve = false;
+	int conta=0;
+
+
+	for (int ct1=1; ct1<=dim2; ct1++)
+	{
+	   if ( set_is_member(s1, s2[ct1])) 
+	   {
+	   	conta ++;
+	   }
+
+	   if (conta == dim2 ){
+	        devolve = true;
+	   }
+	   else{
+	        devolve = false;
+	   }
+	}
+	return devolve = false;
+}
 
 /**
  * Descrição:
@@ -147,6 +201,20 @@ bool set_contains(const Set s1, const Set s2 ){
  *    true se o conjunto é válido, false caso contrário.
  **/
 bool set_is_valid(Set s) {
-	// A implementar
-	return false;	
+
+	bool devolve = true;
+    int conta =0;
+	int dim = set_cardinality(s);//dimensao do conjunto
+
+	if (dim>=0 && dim <= MAX_SET)
+		devolve = true;
+	else
+		devolve = false;
+
+	for (int ct1=1; ct1<dim; ct1++ )
+	  if (s[ct1] == s[ct1+1]) conta++;
+
+	  if (conta>0) devolve = false;
+
+	return devolve = false;
 }

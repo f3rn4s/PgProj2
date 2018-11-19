@@ -248,10 +248,6 @@ void test_set_not_contains_other_set() {
 }
 
 int main() {
-	Set arr1 = { 1, 2, 5, 7, 21 };
-
-	set_cardinality(arr1);
-
 	BEGIN_TESTS();
 
 	// is member tests
