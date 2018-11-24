@@ -6,17 +6,15 @@
 
 #include  "set.h"
 
- 
-
 /**
  * Descrição:
  *   Saber quantos elementos tem o conjunto recebido em parametro.
  * Parâmetros:
- *   s - o conjunto do qual se pretende saber a dimensão 
+ *   s - o conjunto do qual se pretende saber a dimensão
  * Retorno:
  *   retorna o total de elementos do conjunto
  */
-int  set_cardinality(const Set s ){
+int  set_cardinality( const Set s ){
 	return s[0];
 }
 
@@ -32,19 +30,17 @@ int  set_cardinality(const Set s ){
  *   	retorna true se o inteiro "elem" existe no conjunto "s", e false caso contrário
  */
 bool set_is_member( const Set s,  int elem ){
-
-int dim = set_cardinality(s);
   
-  for (int i = 1; i < dim; i++)
-  {
-  	if (s[i] == elem)
-  	{
-  		return true;
-  	}
-  }
-
+  int dim = set_cardinality(s);
+  
+  for (int ct=1; ct<=dim;ct++)
+    if (s[ct] == elem)//percorre o array a procura do elememto 
+		return true;
+	    
   return false;
 }
+
+
 
 /**
  * Descrição:
@@ -58,24 +54,19 @@ int dim = set_cardinality(s);
  *   Caso contrário, retorna false.
  */
 bool set_equals(const Set s1, const Set s2 ){
+   
+   int dim1 = set_cardinality(s1);//dimensao do 1 conjunto
+   int dim2 = set_cardinality(s2);//dimensao do 2 conjunto
+   
 
-   int dim1 = set_cardinality(s1);
-   int dim2 = set_cardinality(s2);
-   bool equal = false;
-   int i = 0;
+	if (dim1 != dim2)
+      return false;
 
-   if (dim1 != dim2)
-   {
-   	equal = false;
-   }
-   else
-   {
-   	for (i = 1; i <= dim2 ; i++)
-   	{
-   		equal = set_is_member (s1, s2[i]);
-   	}
-   }
-   return equal;
+	for (int ct2=1; ct2<=dim2; ct2++) 
+		if(!set_is_member(s1, s2[ct2]))//se s2.elem não existe no s1 
+			return false;//não são iguais
+	  	 
+	return true; 
 } 
 
 
@@ -91,22 +82,23 @@ bool set_equals(const Set s1, const Set s2 ){
  *    true se o conjunto união foi gerado corretamente, e false se o array "sr" não
  *    tem capacidade para conter todos os elementos do conjunto união.
  */
-bool set_union( const Set s1, const Set s2, Set sr ){
-
-	if((s1[0] + s2[0]) > 256) // perguntar colocar Max_SET????????????
-		return false;//se exceder sair
-	sr[0] = s1[0] + s2[0];//definir tamanho de sr
+bool set_union( const Set s1, const Set s2, Set sr )
+{
+	if((s1[0] + s2[0]) > MAX_SET) 
+		return false;
 	
-	int i, j, start2idx = s1[0] + 1;
-	
-	
-	for( i = 1; i <= s1[0]; i++)// para copy do s1 em sr
-		sr[i] = s1[i];
-	
-	for(i = 1, j = start2idx; i<=s2[0]; i++, j++)// apos fim de s1...
-		sr[j] = s2[i];//... colocar s2
+	int i, idx = s1[0];
 		
-	return true;// se chegou aqui terá feito tudo corretamente
+	for( i = 1; i <= s1[0]; i++)//coloca s1 em sr
+		sr[i] = s1[i];
+		
+	for(i = 1; i <= s2[0]; i++)//em seguinte coloca s2
+		if(!set_is_member(s1, s2[i]))
+			sr[++idx] = s2[i];
+		
+	sr[0] = idx;//a ult posição de sr é o nr de elem.
+	
+	return true;
 }
 
 /**
@@ -120,21 +112,17 @@ bool set_union( const Set s1, const Set s2, Set sr ){
  * Retorno:
  *   Não retorna valor. É sempre possível realizar a intersecção
  */
- void set_intersection( const Set s1, const Set s2, Set sr ){
-
-	int i, j, count = 0;
+ void set_intersection( const Set s1, const Set s2, Set sr )
+ {
+	int i, count = 0;
 		
-	for(i = 1; i <= s1[0]; i++)// a cada s1
-		for(j = 1; j <= s2[0]; j++)// compara com todos de s2
-			if(s1[i] == s2[j])
-			{
-				count++;//contador e posicionador para sr
-				sr[count] = s1[i];
-			}
-	sr[0] = count;	
-	return;//esta fc parte do principio de k não há elementos repetidos
-}//perguntar se há elementos repetidos????
-
+	for(i = 1; i <= s1[0]; i++)
+		if(set_is_member(s2, s1[i]))//ver se existe em s2
+			sr[++count] = s1[i];//colocar em sr
+		
+	sr[0] = count;//ult posição	
+	return;
+}
 /**
  * Descrição:
  *   realiza a diferença entre os elementos dos conjuntos recebidos s1 e s2 
@@ -147,13 +135,13 @@ bool set_union( const Set s1, const Set s2, Set sr ){
  *   Não retorna valor. É sempre possível realizar a diferença
  */
 void set_difference(const Set s1, const Set s2, Set sr ){
-	//if(s1[0]>s2[0]) perguntar qt à diferença com s1/2 vazio
-	sr[0] = (s1[0]<s2[0]) ? s1[0] : s2[0];//tamanho sr condicionado 
-	int i; 
 	
-	for( i = 1; i < s1[0] || i<s2[0]; i++)// para copy do s1 em sr
-		sr[i] = s1[i]-s2[i];
-			
+	int count = 0; 
+	for(int i = 1; i<=s1[0]; i++)
+		if(!set_is_member( s2, s1[i]))//se não existe em s2
+			sr[++count] = s1[i];//é a diferença
+		
+	sr[0] = count;//ult posição
 	return;
 }
 
@@ -168,28 +156,23 @@ void set_difference(const Set s1, const Set s2, Set sr ){
  *   retorna valor de true se "s1" contém "s2", e false caso contrário.
  */
 bool set_contains(const Set s1, const Set s2 ){
-
+	
 	int dim2 = set_cardinality(s2);//dimensao do 2 conjunto
 	bool devolve = false;
 	int conta=0;
 
 
 	for (int ct1=1; ct1<=dim2; ct1++)
-	{
-	   if ( set_is_member(s1, s2[ct1])) 
-	   {
-	   	conta ++;
-	   }
+	   if (set_is_member( s1, s2[ct1]))//se s2.elem existe em s1
+		   conta ++;//incrementar o contador
 
-	   if (conta == dim2 ){
-	        devolve = true;
-	   }
-	   else{
-	        devolve = false;
-	   }
-	}
-	return devolve = false;
+	if (conta == dim2)//se o contador for igual a s2.dim
+		devolve = true;//logo, todos os s2.elem estão contidos em s1
+	   
+
+	return devolve;
 }
+
 
 /**
  * Descrição:
@@ -200,21 +183,20 @@ bool set_contains(const Set s1, const Set s2 ){
  *  * Retorno:
  *    true se o conjunto é válido, false caso contrário.
  **/
-bool set_is_valid(Set s) {
+bool set_is_valid(Set s) 
+{
 
-	bool devolve = true;
-    int conta =0;
+	int ct1, ct2;
+
 	int dim = set_cardinality(s);//dimensao do conjunto
 
-	if (dim>=0 && dim <= MAX_SET)
-		devolve = true;
-	else
-		devolve = false;
+	if (dim<0 || dim > MAX_SET)
+		return false;
 
-	for (int ct1=1; ct1<dim; ct1++ )
-	  if (s[ct1] == s[ct1+1]) conta++;
-
-	  if (conta>0) devolve = false;
-
-	return devolve = false;
+	for (ct1=1; ct1<=dim; ct1++ )//a cada elementos
+		for(ct2 =ct1+1; ct2<=dim; ct2++)//comparar com todos adiante
+			if (s[ct1] == s[ct2])
+				return false;
+	
+	return true;
 }

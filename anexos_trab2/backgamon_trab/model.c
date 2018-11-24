@@ -31,9 +31,16 @@ int hittedReds;			// total de peças vermelhas capturadas
  * 		false caso contrário
  **/
 bool place_is_open(int place_num, int color) {
-	// A implementar
-	return true;
-}
+
+	if(reds[place_num] != 0 && color == 0) //se for o jogador branco e na posição dos reds estiver algo false
+	{
+		return false;
+	}
+	else if(whites[place_num] != 0 && color == 1)//se for o jogador vermelho e na posição das whites estiver algo retorna false
+	{
+		return false;
+	}
+	return true; // caso contrario retorna true porque se em qualquer uma das posições estiverem vazias independentemente do jogador pode-se colocar peças
 
 /**
  * A função tenta colocar uma quantidade de peças de um dado
@@ -48,8 +55,36 @@ bool place_is_open(int place_num, int color) {
  * 		 1 se o lugar estava disponível e a unica peça do adversário presente foi capturada
  * 		 0 se o lugar estava vazio, não havendo portanto captura
  **/
-int piece_put(int place_num, int quant, int color) {
-	// A implementar
+int piece_put(int place_num, int quant, int color) { //0-white 1- red
+
+	if (place_is_open(place_num, color) == true)
+	{
+		if (color == 0 )
+		{
+			whites[place_num]+= quant;
+		}
+		else
+		{
+			reds[place_num] += quant;
+		}
+		return 0;
+	}
+	else 
+	{
+		if (reds[place_num] == 1 && color == 0) 
+		{
+			reds[place_num] = 0;
+			whites[place_num] += quant;
+			return 1;
+		}
+		else if (whites[place_num] == 1 && color == 1)
+		{
+			whites[place_num] = 0;
+			reds[place_num]  += quant;
+			return 1;
+		}
+		return -1;
+	}
 	return 0;
 }
 
@@ -63,7 +98,10 @@ int piece_put(int place_num, int quant, int color) {
  * 		false se a casa estava vazia ou tinha peças do adversário
  **/		
 bool piece_remove(int place_num,  int color) {
-	// A implementar
+	if (place_is_open(place_num, color) == false)
+	{
+		/* code */
+	}
 	return false;
 }
 
