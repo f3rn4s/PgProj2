@@ -13,12 +13,12 @@
 
 // variávels globais para representar o estado do tabuleiro de jogo
 
+
 int reds[NPLACES]; 		// distribuição das peças do jogador RED
 int whites[NPLACES]; 	// distribuição das peças do jogador WHITE
 
 int hittedWhites;		// total de peças brancas capturadas
 int hittedReds;			// total de peças vermelhas capturadas
-
 
 /**
  * retorna true se o lugar indicado estiver disponível (open)
@@ -31,16 +31,17 @@ int hittedReds;			// total de peças vermelhas capturadas
  * 		false caso contrário
  **/
 bool place_is_open(int place_num, int color) {
-
-	if(reds[place_num] != 0 && color == 0) //se for o jogador branco e na posição dos reds estiver algo false
+	
+	if(color==0)
 	{
-		return false;
+		if(pieces_at(place_num, 1)>1)
+			return false;
 	}
-	else if(whites[place_num] != 0 && color == 1)//se for o jogador vermelho e na posição das whites estiver algo retorna false
-	{
-		return false;
-	}
-	return true; // caso contrario retorna true porque se em qualquer uma das posições estiverem vazias independentemente do jogador pode-se colocar peças
+	else
+		if(pieces_at(place_num, 0)>1)
+			return false;
+	return true;//verificar depois
+}
 
 /**
  * A função tenta colocar uma quantidade de peças de um dado
@@ -55,35 +56,39 @@ bool place_is_open(int place_num, int color) {
  * 		 1 se o lugar estava disponível e a unica peça do adversário presente foi capturada
  * 		 0 se o lugar estava vazio, não havendo portanto captura
  **/
-int piece_put(int place_num, int quant, int color) { //0-white 1- red
-
-	if (place_is_open(place_num, color) == true)
+int piece_put(int place_num, int quant, int color) {
+	if(color==0)
 	{
-		if (color == 0 )
+		if(pieces_at(place_num, RED)>1)
+			return -1;
+		if(pieces_at(place_num, RED)==1)
 		{
-			whites[place_num]+= quant;
+			reds[place_num]--;//é o prof a fazer a captura 
+			whites[place_num]++;//é sempre 1 peça!
+			return 1;
 		}
-		else
+		if(pieces_at(place_num, RED)==0)
 		{
-			reds[place_num] += quant;
+			whites[place_num]++;
+			return 0;
 		}
-		return 0;
 	}
-	else 
+	
+	if(color==1)
 	{
-		if (reds[place_num] == 1 && color == 0) 
+		if(pieces_at(place_num, WHITE)>1)
+			return -1;
+		if(pieces_at(place_num, WHITE)==1)
 		{
-			reds[place_num] = 0;
-			whites[place_num] += quant;
+			whites[place_num]--;
+			reds[place_num]++;
 			return 1;
 		}
-		else if (whites[place_num] == 1 && color == 1)
+		if(pieces_at(place_num, WHITE)==0)
 		{
-			whites[place_num] = 0;
-			reds[place_num]  += quant;
-			return 1;
+			reds[place_num]++;
+			return 0;
 		}
-		return -1;
 	}
 	return 0;
 }
@@ -96,13 +101,19 @@ int piece_put(int place_num, int quant, int color) { //0-white 1- red
  * Retorna:
  * 		true se a remoção foi possível (havia peças do jogador na casa
  * 		false se a casa estava vazia ou tinha peças do adversário
- **/		
-bool piece_remove(int place_num,  int color) {
-	if (place_is_open(place_num, color) == false)
+ **/	
+bool piece_remove(int place_num,  int color)
+{
+	if(pieces_at(place_num, color)>0)
 	{
-		/* code */
+		if(color==0)
+			whites[place_num]--;
+		if(color==1)
+			reds[place_num]--;
+		return true;
 	}
-	return false;
+	else
+		return false;
 }
 
 /**
@@ -113,7 +124,12 @@ bool piece_remove(int place_num,  int color) {
  * Retorna- o número de peças do jogador na casa(0 se não existirem)
  **/
 int pieces_at(int place_num, int color) {
-	// A implementar
+	if(color==0)
+		return whites[place_num];
+		
+	if(color==1)
+		return reds[place_num];
+	
 	return 0;
 }
 
@@ -126,7 +142,11 @@ int pieces_at(int place_num, int color) {
  * Retorna- a posição da casa "home" do jogador correspondente ao valor da face do dado
  **/
  int place_home_other(int num, int color) {
-	// A implementar
+	if (color == 0) //jogador white
+		return 11+num;//11 é zero de cima
+		
+    if (color == 1) //jogador red 
+		return 12-num;//12 é zero de baixo
 	return 0;
 }
 
@@ -143,8 +163,19 @@ int pieces_at(int place_num, int color) {
  * 		true se houver pelo menos um moviment
  **/
 bool place_any(int mov1, int mov2, int color) {
-	// A implementar
-	return true;
+	if(color==0)
+		for(int i = 1;i<NPLACES;i++)
+			if(pieces_at(i, 0)>=1)
+				if(pieces_at(i+mov1, 1)<2 || pieces_at(i+mov2, 1)<2)
+					return true;
+		
+	if(color==1)
+		for(int i = 1;i<NPLACES;i++)//percorrer as casas todas
+			if(pieces_at(i, 1)>=1)//se tiver peças reds
+				if(pieces_at(i+mov1, 0)<2 || pieces_at(i+mov2, 0)<2)//somar essa casa os 2 movs
+					return true;//se uma estiver sem +1whites devolver true
+	
+	return false;
 }
 
 /** Adiciona uma peça às peças capturadas do jogador "color"
@@ -155,9 +186,14 @@ bool place_any(int mov1, int mov2, int color) {
  * 		Nada
  **/
 void bar_put(int color) {
-	// A implementar
+	if(color==0)
+		hittedWhites++;
+	
+	if(color==1)
+		hittedReds++;
+	
+	return;
 }
-
 
 /**
  * Remove uma peça, se possível. às peças capturadas do jogador "color"
@@ -169,10 +205,20 @@ void bar_put(int color) {
  * 		false se não havia peças capturadas do jogador "color"
  **/
 bool bar_remove(int color) {
-	// A implementar
-	return false;
+	if(color==0)
+	{
+		if(hittedWhites==0)
+			return false;
+		hittedWhites--;
+	}
+	if(color==1)
+	{
+		if(hittedReds==0)
+			return false;
+		hittedReds--;
+	}
+	return true;
 }
-
 
 /**
  * Retorna o total de peças capturadas do jogador indicado
@@ -183,7 +229,10 @@ bool bar_remove(int color) {
  * 		total de peças capturadas do jogador (ou 0 se não existirem)
  **/
 int bar_captured(int color) {
-	// A implementar
+	if(color==0)
+		return hittedWhites;
+	if(color==1)
+		return hittedReds;
 	return 0;
 }
 
@@ -200,10 +249,26 @@ int bar_captured(int color) {
  * 		true se a jogada for possível, false caso contrário
  **/
 bool bar_any(int face1, int face2, int color) {
-	// A implementar
-	return true;
-}
+	bool devolve;
+    
+    
+    switch(color) {
+            //para a cor branco vai verificar se existe alguma pca do outro 
+            //nas posicoes das faces do dados se sim 
+        
+    case 0: //white    
+            if (pieces_at(11+face1, 1)<2 || pieces_at(11+face2, 1)<2)//11enão12
+            devolve = true;       
+            break;
+    case 1: //red    
+            if (pieces_at(12-face1, 0)<2 || pieces_at(12-face2, 0)<2)//12enão11
+            devolve = true;      
+            break;            
+    }
+	
+	return devolve;
 
+}
 
 /**
  * verifica se foi atingida uma situação de vitória para o jogador indicadp
@@ -216,7 +281,19 @@ bool bar_any(int face1, int face2, int color) {
  * 		false caso contrário
  * */
 bool game_win(int color) {
-	// A implementar
+	int soma=0;
+	if(color==0)//whites
+		for(int i = 6;i<12;i++)//percorrer zona white
+			soma += pieces_at(i, 0);//somar peças white nessa zona
+	if(soma == 15)
+		return true;//vitoria white
+		
+	if(color==1)//reds
+		for(int i = 12;i<18;i++)//percorrer zona red
+			soma += pieces_at(i, 1);//somar peças red nessa zona
+	if(soma == 15)
+		return true;//vitoria red
+		
 	return false;
 }
 
@@ -226,5 +303,16 @@ bool game_win(int color) {
  * e sem peças capturadas
  **/
 void game_init() {
-	// A implementar
+	hittedWhites = 0;// total de peças brancas capturadas 
+	hittedReds   = 0; // total de peças vermelhas capturadas
+
+	reds[0]  = 5; // distribuição das peças do jogador RED
+	reds[19]  = 3;
+	reds[17]  = 5;
+	reds[11]  = 2;
+	
+	whites[6]= 5; // distribuição das peças do jogador WHITE
+	whites[4]= 3;
+	whites[12]= 2;
+	whites[23]= 5;
 }
